@@ -1,0 +1,52 @@
+﻿<Window x:Class="SrtEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:SrtEditor.Controls"
+        xmlns:models="clr-namespace:SrtEditor.Models"
+        Title="MainWindow" Height="350" Width="525">
+    <Window.DataContext>
+        <models:MainModel />
+    </Window.DataContext>
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding OpenSrt}" Key="O" Modifiers="Control+Shift" />
+        <KeyBinding Command="{Binding OpenVideo}" Key="O" Modifiers="Control" />
+        <KeyBinding Command="{Binding SaveSrt}" Key="S" Modifiers="Control" />
+    </Window.InputBindings>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Menu>
+            <MenuItem Header="File">
+                <MenuItem Header="Open Video" Command="{Binding OpenVideo}" />
+                <MenuItem Header="Open SRT" Command="{Binding OpenSrt}" />
+                <MenuItem Header="Save SRT" Command="{Binding SaveSrt}" />
+            </MenuItem>
+        </Menu>
+        <Grid Grid.Row="1" IsEnabled="{Binding VideoLoaded}">
+            <controls:VideoControl
+                VideoSource="{Binding Mode=TwoWay, Path=DataContext.VideoSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
+                SrtCollection="{Binding Mode=OneWay, Path=DataContext.SrtDocument, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
+                VideoEnabled="{Binding Mode=TwoWay, Path=DataContext.VideoLoaded, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
+                VideoLength="{Binding Mode=TwoWay, Path=DataContext.VideoLength, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
+                CurrentTime="{Binding Mode=TwoWay, Path=DataContext.CurrentTime, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
+        </Grid>
+        <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" ResizeDirection="Rows" />
+        <Grid Grid.Row="3" IsEnabled="{Binding VideoLoaded}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <controls:TimelineControl
+                CurrentTime="{Binding Mode=TwoWay, Path=DataContext.CurrentTime, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
+                SrtCollection="{Binding Mode=TwoWay, Path=DataContext.SrtDocument, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
+                Length="{Binding Mode=TwoWay, Path=DataContext.VideoLength, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
+                IntervalSelected="OnIntervalSelected"/>
+
+            <TextBox Text="{Binding SelectedInterval.Text}" Grid.Row="1" Margin="4" IsEnabled="{Binding IntervalSelected}"></TextBox>
+        </Grid>
+    </Grid>
+</Window>
